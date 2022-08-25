@@ -1,53 +1,29 @@
 package org.lacombe.kata;
 
-import java.util.Iterator;
 import java.util.Objects;
 
 public class Mower {
 
     Location location;
 
-    MowerContext context;
+    final MowerContext context;
 
     public Mower(MowerContext context, Location loc) {
         this.location = loc;
         this.context = context;
     }
 
-    /**
-     * Side effect function, consumes the tasks described in the MowerContext
-     * If any command result in an unexpected behavior, apply none
-     * returns the final destination reached by the mower after all transformations applied
-     *
-     * @return
-     */
-    public void mow() {
-        Location finalLocation = new Location(location);
-        Iterator<ControlCommand> iterator = context.commandIterator();
-        while (iterator.hasNext()) {
-            finalLocation = consumeCommand(iterator.next(), finalLocation);
-        }
-        this.location = finalLocation;
+    public void move() {
+        context.command()
+               .forEach(command1 -> command1.apply(this));
     }
 
-    /**
-     * Apply the given command to the given location
-     * The applied transformation is bounded by the Mowers context
-     * Returns the new location reached.
-     *
-     * @param currentCommand
-     * @param loc
-     * @return
-     */
-    private Location consumeCommand(ControlCommand currentCommand, Location loc) {
-        Position finalPosition = loc.currentPos();
-        Direction finalDirection = loc.currentDir();
-        if (currentCommand.isTranslation()) {
-            finalPosition = loc.plotNextPosition(context);
-        } else {
-            finalDirection = loc.rotate(currentCommand);
-        }
-        return new Location(finalPosition, finalDirection);
+    protected void translate() {
+        this.location = this.location.plotNextLocation(context);
+    }
+
+    protected void rotate(RotationDirection direction) {
+        this.location = this.location.rotate(direction);
     }
 
     @Override
@@ -65,6 +41,6 @@ public class Mower {
 
     @Override
     public String toString() {
-        return "Mower{" + this.location.pos + "," + this.location.facingDirection + "}";
+        return "Mower{" + this.location.position + "," + this.location.orientation + "}";
     }
 }

@@ -3,17 +3,16 @@ package org.lacombe.kata;
 import java.util.Objects;
 
 public class Position {
-    Integer x;
-    Integer y;
+    final Integer x;
+    final Integer y;
 
     public Position(Integer x, Integer y) {
         this.x = x;
         this.y = y;
     }
 
-    public Position(Position p) {
-        this.x = p.x.intValue();
-        this.y = p.y.intValue();
+    public Position add(Position position) {
+        return new Position(this.x + position.x, this.y + position.y);
     }
 
     @Override
